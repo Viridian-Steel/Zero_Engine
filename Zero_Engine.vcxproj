@@ -73,18 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>A:\Repos\API%27S\Vulkan\Include;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\include;A:\Repos\Libraries\glm;$(IncludePath)</IncludePath>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>A:\Repos\API%27S\Vulkan\Include;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\include;A:\Repos\Libraries\glm;$(IncludePath)</IncludePath>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>A:\Repos\API%27S\Vulkan\Include;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\include;A:\Repos\Libraries\glm;$(IncludePath)</IncludePath>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>A:\Repos\API%27S\Vulkan\Include;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\include;A:\Repos\Libraries\glm;$(IncludePath)</IncludePath>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,6 +104,11 @@
       <AdditionalLibraryDirectories>A:\Repos\API%27S\Vulkan\Lib;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Message>Compiling Shaders...</Message>
+      <Command>$(ProjectDir)src\Shaders\compile</Command>
+      <Outputs>.spv;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -119,6 +128,17 @@
       <AdditionalLibraryDirectories>A:\Repos\API%27S\Vulkan\Lib;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuild>
+      <BuildInParallel>false</BuildInParallel>
+      <Command>$(ProjectName)Shaders\compile.bat</Command>
+      <Message>Compiling shaders</Message>
+      <Outputs>$(Identity).spv;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)src\Shaders\compile</Command>
+      <Message>Compiling Shaders...</Message>
+      <Outputs>.spv;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -134,6 +154,17 @@
       <AdditionalLibraryDirectories>A:\Repos\API%27S\Vulkan\Lib;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuild>
+      <BuildInParallel>false</BuildInParallel>
+      <Command>$(ProjectName)Shaders\compile.bat</Command>
+      <Message>Compiling shaders</Message>
+      <Outputs>$(Identity).spv;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)src\Shaders\compile</Command>
+      <Message>Compiling Shaders...</Message>
+      <Outputs>.spv;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,15 +184,30 @@
       <AdditionalLibraryDirectories>A:\Repos\API%27S\Vulkan\Lib;A:\Repos\Libraries\glfw-3.3.4.bin.WIN64\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuild>
+      <BuildInParallel>false</BuildInParallel>
+      <Command>$(ProjectName)Shaders\compile.bat</Command>
+      <Message>Compiling shaders</Message>
+      <Outputs>$(Identity).spv;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)src\Shaders\compile</Command>
+      <Message>Compiling Shaders...</Message>
+      <Outputs>.spv;%(Outputs)</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\First_App.cpp" />
+    <ClCompile Include="src\Graphics\Z_Model.cpp" />
+    <ClCompile Include="src\Graphics\Z_swap_chain.cpp" />
     <ClCompile Include="src\Graphics\Z_device.cpp" />
     <ClCompile Include="src\Graphics\Z_Pipeline.cpp" />
     <ClCompile Include="src\Graphics\z_window.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\Z_Model.hpp" />
+    <ClInclude Include="src\Graphics\Z_swap_chain.hpp" />
     <ClInclude Include="src\Graphics\Z_device.hpp" />
     <ClInclude Include="src\Graphics\Z_Pipeline.hpp" />
     <ClInclude Include="src\Graphics\z_window.hpp" />
@@ -169,7 +215,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\compile.bat" />
-    <None Include="src\Shaders\simple_shader.frag" />
+    <None Include="src\Shaders\simple_shader.frag">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+    </None>
     <None Include="src\Shaders\simple_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
