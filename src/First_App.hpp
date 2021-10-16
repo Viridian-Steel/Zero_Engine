@@ -25,21 +25,18 @@ namespace ze {
 		FirstApp& operator=(const FirstApp&) = delete;
 	private:
 		void loadModels(); 
-		void sierpinski(
-			std::vector<ZModel::Vertex>& vertices,
-			int depth,
-			glm::vec2 left,
-			glm::vec2 right,
-			glm::vec2 top);
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();
+		void freeCommandBuffers();
 		void drawFrame();
+		void recreateSwapChain();
+		void recordCommandBuffer(int imageIndex);
 
 		ZeWindow window{width, height, "Heey, Vulkan's up!"};
 		ZDevice zDevice{window};
 
-		ZSwapChain zSwapChain{zDevice, window.getExtent()};
+		std::unique_ptr<ZSwapChain> zSwapChain;
 
 		std::unique_ptr<ZePipeline> zPipeline;
 

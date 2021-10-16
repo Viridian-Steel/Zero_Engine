@@ -8,7 +8,7 @@ namespace ze {
 	{
 		loadModels();
 		createPipelineLayout();
-		createPipeline();
+		recreateSwapChain();
 		createCommandBuffers();
 	}
 	FirstApp::~FirstApp()
@@ -23,31 +23,13 @@ namespace ze {
 		}
 	}
 
-	void FirstApp::sierpinski(std::vector<ZModel::Vertex>& vertices, int depth, glm::vec2 left, glm::vec2 right, glm::vec2 top) {
-		if (depth <= 0) {
-			vertices.push_back({ top });
-			vertices.push_back({ right });
-			vertices.push_back({ left });
-		}
-		else {
-			auto leftTop = 0.5f * (left + top);
-			auto rightTop = 0.5f * (right + top);
-			auto leftRight = 0.5f * (left + right);
-			sierpinski(vertices, depth - 1, left, leftRight, leftTop);
-			sierpinski(vertices, depth - 1, leftRight, right, rightTop);
-			sierpinski(vertices, depth - 1, leftTop, rightTop, top);
-		}
-	}
-
 	void FirstApp::loadModels()
 	{
-		//std::vector<ZModel::Vertex> vertices{
-		//	{{0.0f, -0.5f}},
-		//	{{0.5f, 0.5f}},
-		//	{{-0.5f, 0.5f}}
-		//};
-		std::vector<ZModel::Vertex> vertices{};
-		sierpinski(vertices, 5, { -0.5f, 0.5f }, { 0.5f, 0.5f }, { 0.0f, -0.5f });
+		std::vector<ZModel::Vertex> vertices{
+			{{0.0f, -0.5f}, {1.f, 0.f, 0.f}},
+			{{0.5f, 0.5f}, {0.f, 1.f, 0.f}},
+			{{-0.5f, 0.5f}, {0.f, 0.f, 1.f}}
+		};
 		zModel = std::make_unique<ZModel>(zDevice, vertices);
 	}
 	void FirstApp::createPipelineLayout()
@@ -66,13 +48,14 @@ namespace ze {
 	}
 	void FirstApp::createPipeline()
 	{
-		PipelineConfigInfo pipelineConfig{};
-		ZePipeline::defaultPipelineConfigInfo(
-			pipelineConfig,
-			zSwapChain.width(),
-			zSwapChain.height());
 
-		pipelineConfig.renderPass = zSwapChain.getRenderPass();
+		assert(zSwapChain != nullptr && "Failed to create pipeline before swapchain");
+		assert(pipelineLayout != nullptr && "cannot create Pipeline before Pipeline Layout");
+
+		PipelineConfigInfo pipelineConfig{};
+		ZePipeline::defaultPipelineConfigInfo(pipelineConfig);
+
+		pipelineConfig.renderPass = zSwapChain->getRenderPass();
 		pipelineConfig.pipelineLayout = pipelineLayout;
 
 		zPipeline = std::make_unique<ZePipeline>(
@@ -83,9 +66,35 @@ namespace ze {
 			);
 
 	}
+	void FirstApp::recreateSwapChain()
+	{
+		auto extent = window.getExtent();
+
+		while (extent.width == 0 || extent.height == 0) {
+			extent = window.getExtent();
+			glfwWaitEvents();
+		}
+
+		vkDeviceWaitIdle(zDevice.device());
+		
+		if (zSwapChain == nullptr) {
+			zSwapChain = std::make_unique<ZSwapChain>(zDevice, extent);
+		}
+		else {
+			zSwapChain = std::make_unique<ZSwapChain>(zDevice, extent, std::move(zSwapChain));
+			if (zSwapChain->imageCount() != commandBuffers.size())
+			{
+				freeCommandBuffers();
+				createCommandBuffers();
+			}
+		}
+
+		createPipeline();
+
+	}
 	void FirstApp::createCommandBuffers()
 	{
-		commandBuffers.resize(zSwapChain.imageCount());
+		commandBuffers.resize(zSwapChain->imageCount());
 
 		VkCommandBufferAllocateInfo allocInfo{};
 
@@ -99,56 +108,94 @@ namespace ze {
 			throw std::runtime_error("failed to allocate command buffers.");
 		}
 
-		for (int i = 0; i < commandBuffers.size(); i++) {
-			VkCommandBufferBeginInfo beginInfo{};
+	}
 
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	void FirstApp::freeCommandBuffers()
+	{
+		vkFreeCommandBuffers(
+			zDevice.device(), 
+			zDevice.getCommandPool(), 
+			static_cast<uint32_t>(commandBuffers.size()), 
+			commandBuffers.data());
+		commandBuffers.clear();
 
-			if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-				throw std::runtime_error("Command buffer failed to start recording");
-			}
+	}
 
-			VkRenderPassBeginInfo renderPassInfo{};
+	void FirstApp::recordCommandBuffer(int imageIndex) {
+		VkCommandBufferBeginInfo beginInfo{};
 
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = zSwapChain.getRenderPass();
-			renderPassInfo.framebuffer = zSwapChain.getFrameBuffer(i);
-			renderPassInfo.renderArea.offset = {0,0};
-			renderPassInfo.renderArea.extent = zSwapChain.getSwapChainExtent();
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+		if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("Command buffer failed to start recording");
+		}
+
+		VkRenderPassBeginInfo renderPassInfo{};
+
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = zSwapChain->getRenderPass();
+		renderPassInfo.framebuffer = zSwapChain->getFrameBuffer(imageIndex);
+		renderPassInfo.renderArea.offset = { 0,0 };
+		renderPassInfo.renderArea.extent = zSwapChain->getSwapChainExtent();
 
 
-			std::array<VkClearValue, 2> clearValues{};
-			clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
-			clearValues[1].depthStencil = { 1.0f, 0 };
+		std::array<VkClearValue, 2> clearValues{};
+		clearValues[0].color = { 0.1f, 0.1f, 0.1f, 1.0f };
+		clearValues[1].depthStencil = { 1.0f, 0 };
 
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-			renderPassInfo.pClearValues = clearValues.data();
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
 
 
-			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			zPipeline->bind(commandBuffers[i]);
+		VkViewport viewport{};
+		viewport.x = 0.f;
+		viewport.y = 0.f;
+		viewport.width = static_cast<uint32_t>(zSwapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<uint32_t>(zSwapChain->getSwapChainExtent().height);
+		viewport.minDepth = 0.f;
+		viewport.maxDepth = 1.f;
+		VkRect2D scissor{ {0,0}, zSwapChain->getSwapChainExtent() };
 
-			zModel->bind(commandBuffers[i]);
-			zModel->draw(commandBuffers[i]);
+		vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+		vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissor);
 
-			vkCmdEndRenderPass(commandBuffers[i]);
+		zPipeline->bind(commandBuffers[imageIndex]);
 
-			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-				throw std::runtime_error("failed to record command buffer.");
-			}
+		zModel->bind(commandBuffers[imageIndex]);
+		zModel->draw(commandBuffers[imageIndex]);
+
+		vkCmdEndRenderPass(commandBuffers[imageIndex]);
+
+		if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record command buffer.");
 		}
 	}
 	void FirstApp::drawFrame()
 	{
 		uint32_t imageIndex;
-		auto result = zSwapChain.acquireNextImage(&imageIndex);
+		auto result = zSwapChain->acquireNextImage(&imageIndex);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+			recreateSwapChain();
+			return;
+		}
 
 		if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 			throw std::runtime_error("failed to aqquire next image");
 		}
 
-		result = zSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+		recordCommandBuffer(imageIndex);
+
+		result = zSwapChain->submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.wasWindowResized())
+		{
+			window.resetWindowResizedFlag();
+			recreateSwapChain();
+			return;
+		}
 
 		if (result != VK_SUCCESS) {
 			throw std::runtime_error("failed to present swapchain image");
@@ -156,4 +203,3 @@ namespace ze {
 	}
 }
 
-/*validation layer: Validation Error: [ VUID-VkPresentInfoKHR-pImageIndices-01296 ] Object 0: handle = 0x1e348952c78, type = VK_OBJECT_TYPE_QUEUE; | MessageID = 0xc7aabc16 | vkQueuePresentKHR(): pSwapchains[0] images passed to present must be in layout VK_IMAGE_LAYOUT_PRESENT_SRC_KHR or VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR but is in VK_IMAGE_LAYOUT_UNDEFINED. The Vulkan spec states: Each element of pImageIndices must be the index of a presentable image acquired from the swapchain specified by the corresponding element of the pSwapchains array, and the presented image subresource must be in the VK_IMAGE_LAYOUT_PRESENT_SRC_KHR layout at the time the operation is executed on a VkDevice (https://github.com/KhronosGroup/Vulkan-Docs/search?q=)VUID-VkPresentInfoKHR-pImageIndices-01296)*/

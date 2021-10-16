@@ -35,7 +35,7 @@ class ZDevice {
 
   // Not copyable or movable
   ZDevice(const ZDevice &) = delete;
-  void operator=(const ZDevice &) = delete;
+  ZDevice& operator=(const ZDevice &) = delete;
   ZDevice(ZDevice &&) = delete;
   ZDevice &operator=(ZDevice &&) = delete;
 

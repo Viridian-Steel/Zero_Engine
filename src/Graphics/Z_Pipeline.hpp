@@ -10,14 +10,17 @@ namespace ze {
 		PipelineConfigInfo(const PipelineConfigInfo&) = delete;
 		PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
 		PipelineConfigInfo() = default;
-
-		VkViewport viewport;
-		VkRect2D scissor;
+		
+		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 		VkPipelineMultisampleStateCreateInfo multisampleInfo;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+
+		std::vector<VkDynamicState> dynamicStateEnables;
+		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+
 		VkPipelineLayout pipelineLayout = nullptr;
 		VkRenderPass renderPass = nullptr;
 		uint32_t subpass = 0;
@@ -33,10 +36,11 @@ namespace ze {
 		
 		~ZePipeline();
 
+		ZePipeline() = default;
 		ZePipeline(const ZePipeline&) = delete;
-		void operator=(const ZePipeline&) = delete;
+		ZePipeline& operator=(const ZePipeline&) = delete;
 
-		static void defaultPipelineConfigInfo( PipelineConfigInfo& configInfo, uint32_t width, uint32_t height);
+		static void defaultPipelineConfigInfo( PipelineConfigInfo& configInfo );
 
 		void bind(VkCommandBuffer commandBuffer);
 
