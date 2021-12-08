@@ -6,13 +6,13 @@
 #include <string>
 
 namespace ze {
-	class ZeWindow {
+	class ZWindow {
 	public:
-		ZeWindow(int w, int h, std::string name);
-		~ZeWindow();
+		ZWindow(int w, int h, std::string name);
+		~ZWindow();
 
-		ZeWindow(const ZeWindow&) = delete;
-		ZeWindow& operator=(const ZeWindow&) = delete;
+		ZWindow(const ZWindow&) = delete;
+		ZWindow& operator=(const ZWindow&) = delete;
 
 		bool wasWindowResized() { return frameBufferResized; }
 
@@ -20,7 +20,11 @@ namespace ze {
 
 		bool shouldClose() { return glfwWindowShouldClose(window); }
 
-		VkExtent2D getExtent() { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height) }; }
+		VkExtent2D getExtent() {
+			uint32_t extent_width = static_cast<uint32_t>(width);
+			uint32_t extent_height = static_cast<uint32_t>(height);
+			return {extent_width, extent_height};
+		}
 
 		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
 

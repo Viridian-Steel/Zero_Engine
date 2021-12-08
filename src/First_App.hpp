@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Graphics/z_window.hpp"
-#include "Graphics/Z_Pipeline.hpp"
-#include "Graphics/Z_device.hpp"
-#include "Graphics/Z_swap_chain.hpp"
-#include "Graphics/Z_Model.hpp"
+#include "Z_window.hpp"
+#include "Z_device.hpp"
+#include "Z_Renderer.hpp"
+#include "Z_GameObject.hpp"
+
 
 #include <memory>
 #include <vector>
@@ -15,7 +15,7 @@ namespace ze {
 	public:
 		static constexpr int width = 800;
 		static constexpr int height = 600;
-
+		
 		void run();
 
 		FirstApp();
@@ -23,27 +23,13 @@ namespace ze {
 
 		FirstApp(const FirstApp&) = delete;
 		FirstApp& operator=(const FirstApp&) = delete;
+
 	private:
-		void loadModels(); 
-		void createPipelineLayout();
-		void createPipeline();
-		void createCommandBuffers();
-		void freeCommandBuffers();
-		void drawFrame();
-		void recreateSwapChain();
-		void recordCommandBuffer(int imageIndex);
+		void loadGameObjects(); 
 
-		ZeWindow window{width, height, "Heey, Vulkan's up!"};
-		ZDevice zDevice{window};
-
-		std::unique_ptr<ZSwapChain> zSwapChain;
-
-		std::unique_ptr<ZePipeline> zPipeline;
-
-		VkPipelineLayout pipelineLayout;
-
-		std::vector<VkCommandBuffer> commandBuffers;
-
-		std::unique_ptr<ZModel> zModel;
+		ZWindow zWindow{width, height, "Heey, Vulkan's up!"};
+		ZDevice zDevice{zWindow};
+		ZRenderer zRenderer{zWindow , zDevice};
+		std::vector<ZGameObject> gameObjects;
 	};
 }

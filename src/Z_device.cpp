@@ -47,7 +47,7 @@ void DestroyDebugUtilsMessengerEXT(
 }
 
 // class member functions
-ZDevice::ZDevice(ZeWindow &window) : window{window} {
+ZDevice::ZDevice(ZWindow &window) : window{window} {
   createInstance();
   setupDebugMessenger();
   createSurface();

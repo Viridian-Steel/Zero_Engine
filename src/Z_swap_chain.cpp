@@ -306,6 +306,7 @@ void ZSwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
+  swapcChainDepthFormat = depthFormat;
   depthImages.resize(imageCount());
   depthImageMemorys.resize(imageCount());
   depthImageViews.resize(imageCount());

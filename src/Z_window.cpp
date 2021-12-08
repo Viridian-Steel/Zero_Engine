@@ -1,20 +1,20 @@
-#include "z_window.hpp"
+#include "Z_window.hpp"
 #include <stdexcept>
 
 
 namespace ze {
 
-	ZeWindow::ZeWindow(int w, int h, std::string name) : width{ w }, height{ h }, windowName{ name } {
+	ZWindow::ZWindow(int w, int h, std::string name) : width{ w }, height{ h }, windowName{ name } {
 		initWindow();
 	}
 
-	ZeWindow::~ZeWindow()
+	ZWindow::~ZWindow()
 	{
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
 
-	void ZeWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+	void ZWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
 	{
 		if (glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create window surface");
@@ -23,16 +23,16 @@ namespace ze {
 		glfwSetFramebufferSizeCallback(window, frameBufferResizedCallback);
 	}
 
-	void ZeWindow::frameBufferResizedCallback(GLFWwindow* window, int width, int height)
+	void ZWindow::frameBufferResizedCallback(GLFWwindow* window, int width, int height)
 	{
-		auto zWindow = reinterpret_cast<ZeWindow*>(glfwGetWindowUserPointer(window));
+		auto zWindow = reinterpret_cast<ZWindow*>(glfwGetWindowUserPointer(window));
 		zWindow->frameBufferResized = true;
 		zWindow->width = width;
 		zWindow->height = height;
 
 	}
 
-	void ZeWindow::initWindow() {
+	void ZWindow::initWindow() {
 		//GLFW initialization
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);	//Tell GLFW to not use OpenGL

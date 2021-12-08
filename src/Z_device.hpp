@@ -30,7 +30,7 @@ class ZDevice {
   const bool enableValidationLayers = true;
 #endif
 
-  ZDevice(ZeWindow &window);
+  ZDevice(ZWindow &window);
   ~ZDevice();
 
   // Not copyable or movable
@@ -93,7 +93,7 @@ class ZDevice {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  ZeWindow &window;
+  ZWindow &window;
   VkCommandPool commandPool;
 
   VkDevice device_;

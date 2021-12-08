@@ -1,11 +1,17 @@
 #version 450
 
-layout(location = 0) in vec3 fragColor;
+
 layout(location = 0) out vec4 outColor;
+
+layout(push_constant) uniform Push {
+	mat2 transform;
+	vec2 offset; 
+	vec3 color;
+	} push;
 
 void main()
 {
-	outColor = vec4(fragColor,1.);
+	outColor = vec4(push.color,1.);
 }
 
 //#version 450
@@ -161,7 +167,7 @@ void main()
 //    // if (iteration == parameters.max_iter)
 //    // {
 //
-//	//   	// Hier wird der Farbwert für das Innere der Mandelbrotmenge gesetzt
+//	//   	// Hier wird der Farbwert fï¿½r das Innere der Mandelbrotmenge gesetzt
 //
 //    // 	color = vec4(0, 0, 0, 1);
 //    // }

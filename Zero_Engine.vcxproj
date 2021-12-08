@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -198,20 +198,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\First_App.cpp" />
-    <ClCompile Include="src\Graphics\Z_Model.cpp" />
-    <ClCompile Include="src\Graphics\Z_swap_chain.cpp" />
-    <ClCompile Include="src\Graphics\Z_device.cpp" />
-    <ClCompile Include="src\Graphics\Z_Pipeline.cpp" />
-    <ClCompile Include="src\Graphics\z_window.cpp" />
+    <ClCompile Include="src\Simple_Render_System.cpp" />
+    <ClCompile Include="src\Z_Model.cpp" />
+    <ClCompile Include="src\Z_Renderer.cpp" />
+    <ClCompile Include="src\Z_swap_chain.cpp" />
+    <ClCompile Include="src\Z_device.cpp" />
+    <ClCompile Include="src\Z_Pipeline.cpp" />
+    <ClCompile Include="src\Z_window.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Graphics\Z_Model.hpp" />
-    <ClInclude Include="src\Graphics\Z_swap_chain.hpp" />
-    <ClInclude Include="src\Graphics\Z_device.hpp" />
-    <ClInclude Include="src\Graphics\Z_Pipeline.hpp" />
-    <ClInclude Include="src\Graphics\z_window.hpp" />
+    <ClInclude Include="src\Simple_Render_System.hpp" />
+    <ClInclude Include="src\Z_Model.hpp" />
+    <ClInclude Include="src\Z_Renderer.hpp" />
+    <ClInclude Include="src\Z_swap_chain.hpp" />
+    <ClInclude Include="src\Z_device.hpp" />
+    <ClInclude Include="src\Z_Pipeline.hpp" />
+    <ClInclude Include="src\Z_window.hpp" />
     <ClInclude Include="src\First_App.hpp" />
+    <ClInclude Include="src\Z_GameObject.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\compile.bat" />

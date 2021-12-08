@@ -39,6 +39,9 @@ class ZSwapChain {
 
   VkResult acquireNextImage(uint32_t *imageIndex);
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
+  bool compareSwapFormats(const ZSwapChain& swapchain) const {
+      return ((swapchain.swapcChainDepthFormat == swapcChainDepthFormat) && (swapchain.swapChainImageFormat == swapChainImageFormat));
+  }
 
  private:
     void init();
@@ -58,6 +61,7 @@ class ZSwapChain {
 
   VkFormat swapChainImageFormat;
   VkExtent2D swapChainExtent;
+  VkFormat swapcChainDepthFormat;
 
   std::vector<VkFramebuffer> swapChainFramebuffers;
   VkRenderPass renderPass;
