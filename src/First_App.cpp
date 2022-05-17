@@ -1,6 +1,7 @@
 #include "First_App.hpp"
 
-#include "Simple_Render_System.hpp"
+#include "systems/Simple_Render_System.hpp"
+#include "systems/PointLightSystem.hpp"
 #include "Keyboard_Movement_Controller.hpp"
 #include "Z_Camera.hpp"
 #include "Z_Buffer.hpp"
@@ -19,7 +20,9 @@
 namespace ze {
 
 	struct GlobalUBO {
-		glm::mat4 projectionView{ 1.f };
+
+		glm::mat4 projection{ 1.f };
+		glm::mat4 view{ 1.f };
 		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f };
 		glm::vec3 lightPosition{ -1.f };
 		alignas(16) glm::vec4 LightColor{ 1.f };
@@ -65,6 +68,7 @@ namespace ze {
 		}
 
 		SimpleRenderSystem simpleRenderSystem{zDevice, zRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
+		PointLightSystem pointLightSystem{zDevice, zRenderer.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
         ZCamera camera{};
 
         auto viewerObject = ZGameObject::createGameObject();
@@ -101,7 +105,8 @@ namespace ze {
 					
 				//update
 				GlobalUBO ubo{};
-				ubo.projectionView = camera.getProjection() * camera.getView();
+				ubo.projection = camera.getProjection();
+				ubo.view = camera.getView();
 
 				uboBuffers[frameIndex]->writeToBuffer(&ubo);
 				uboBuffers[frameIndex]->flush();
@@ -109,6 +114,7 @@ namespace ze {
 				//render
 				zRenderer.beginSwapChainRenderPass(commandBuffer);
 				simpleRenderSystem.renderGameObjects(frameInfo);
+				pointLightSystem.render(frameInfo);
 				zRenderer.endSwapChainRenderPass(commandBuffer);
 				zRenderer.endFrame();
 			}

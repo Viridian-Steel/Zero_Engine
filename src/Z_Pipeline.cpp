@@ -44,6 +44,9 @@ namespace ze {
 		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
 		configInfo.dynamicStateInfo.flags = 0;
 
+		configInfo.bindingDescriptions = ZModel::Vertex::getBindingDescriptions();
+  		configInfo.attributeDescriptions = ZModel::Vertex::getAttributeDescriptions();
+
 		configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
 		configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
@@ -88,10 +91,7 @@ namespace ze {
 		configInfo.depthStencilInfo.back = {};   // Optional
 	}
 
-	void ZePipeline::bind(VkCommandBuffer commandBuffer)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-	}
+	void ZePipeline::bind(VkCommandBuffer commandBuffer) { vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline); }
 
 	std::vector<char> ZePipeline::readFile(const std::string& filePath)
 	{
@@ -141,8 +141,8 @@ namespace ze {
 		shaderStages[1].pNext = nullptr;
 		shaderStages[1].pSpecializationInfo = nullptr; //coming back to you later
 
-		auto bindingDescriptions = ZModel::Vertex::getBindingDescriptions();
-		auto attributeDescriptions = ZModel::Vertex::getAttributeDescriptions();
+		auto& bindingDescriptions = configInfo.bindingDescriptions;
+  		auto& attributeDescriptions = configInfo.attributeDescriptions;
 
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
