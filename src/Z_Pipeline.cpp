@@ -7,6 +7,10 @@
 #include <iostream>
 #include <cassert>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 namespace ze {
 	ZePipeline::ZePipeline(ZDevice& device, const std::string& vertFilePath, const std::string& fragFilePath, const PipelineConfigInfo& configInfo) : zDevice{device}
 	{
@@ -20,8 +24,6 @@ namespace ze {
 
 		vkDestroyPipeline(zDevice.device(), graphicsPipeline, nullptr);
 	}
-
-
 
 	void ZePipeline::defaultPipelineConfigInfo( PipelineConfigInfo& configInfo)
 	{
@@ -93,10 +95,11 @@ namespace ze {
 
 	std::vector<char> ZePipeline::readFile(const std::string& filePath)
 	{
-		std::ifstream file(filePath, std::ios::ate | std::ios::binary);
+		std::string enginePath = ENGINE_DIR + filePath;
+		std::ifstream file(enginePath, std::ios::ate | std::ios::binary);
 
 		if (!file.is_open()) {
-			throw std::runtime_error("fialed to open file: " + filePath);
+			throw std::runtime_error("fialed to open file: " + enginePath);
 		}
 
 		size_t fileSize = static_cast<size_t>(file.tellg());

@@ -11,6 +11,9 @@
 #include <cstring>
 #include <unordered_map>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
 namespace std {
 	template<>
 	struct hash<ze::ZModel::Vertex> {
@@ -38,7 +41,7 @@ namespace ze {
 	std::unique_ptr<ZModel> ZModel::creatModelFromFile(ZDevice& device, const std::string& filePath)
 	{
 		Builder builder;
-		builder.loadModel(filePath);
+		builder.loadModel(ENGINE_DIR + filePath);
 
 		return std::make_unique<ZModel>(device, builder);
 	}

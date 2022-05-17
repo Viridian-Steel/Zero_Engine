@@ -117,7 +117,7 @@ namespace ze {
 
 	void FirstApp::loadGameObjects()
 	{
-        std::shared_ptr<ZModel> zModel = ZModel::creatModelFromFile(zDevice, "A:\\Repos\\Zero_Engine\\src\\models\\models\\flat_vase.obj");
+        std::shared_ptr<ZModel> zModel = ZModel::creatModelFromFile(zDevice, "models/flat_vase.obj");
 
         auto flatVase = ZGameObject::createGameObject();
         flatVase.model = zModel;
@@ -126,7 +126,7 @@ namespace ze {
 
         gameObjects.emplace(flatVase.getId(), std::move(flatVase));
 
-		zModel = ZModel::creatModelFromFile(zDevice, "A:\\Repos\\Zero_Engine\\src\\models\\models\\smooth_vase.obj");
+		zModel = ZModel::creatModelFromFile(zDevice, "models/smooth_vase.obj");
 
 		auto smoothVase = ZGameObject::createGameObject();
 		smoothVase.model = zModel;
@@ -135,7 +135,7 @@ namespace ze {
 
 		gameObjects.emplace(smoothVase.getId(), std::move(smoothVase));
 
-		zModel = ZModel::creatModelFromFile(zDevice, "A:\\Repos\\Zero_Engine\\src\\models\\models\\quad.obj");
+		zModel = ZModel::creatModelFromFile(zDevice, "models/quad.obj");
 
 		auto floor = ZGameObject::createGameObject();
 		floor.model = zModel;

@@ -10,6 +10,9 @@
 #include <stdexcept>
 #include <array>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
 
 namespace ze {
 
@@ -63,8 +66,8 @@ namespace ze {
 
 		zPipeline = std::make_unique<ZePipeline>(
 			zDevice,
-			"A:/Repos/Zero_Engine/src/Shaders/simple_shader.vert.spv",
-			"A:/Repos/Zero_Engine/src/Shaders/simple_shader.frag.spv",
+			"Shaders/simple_shader.vert.spv",
+			"Shaders/simple_shader.frag.spv",
 			pipelineConfig
 			);
 
