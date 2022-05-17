@@ -4,7 +4,7 @@
 #include "Z_device.hpp"
 #include "Z_Renderer.hpp"
 #include "Z_GameObject.hpp"
-
+#include "Z_Descriptors.hpp"
 
 #include <memory>
 #include <vector>
@@ -30,6 +30,9 @@ namespace ze {
 		ZWindow zWindow{width, height, "Heey, Vulkan's up!"};
 		ZDevice zDevice{zWindow};
 		ZRenderer zRenderer{zWindow , zDevice};
-		std::vector<ZGameObject> gameObjects;
+
+		//the order matters here	
+		std::unique_ptr<ZDescriptorPool> globalPool{};
+		ZGameObject::Map gameObjects;
 	};
 }

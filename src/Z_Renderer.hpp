@@ -25,6 +25,7 @@ namespace ze {
 		void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
 		VkRenderPass getSwapChainRenderPass() const { return zSwapChain->getRenderPass(); }
+		float getAspectRatio() const { return zSwapChain->extentAspectRatio(); }
 		VkCommandBuffer getCurrentCommandBuffer() const {
 			assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
 			return commandBuffers[currentFrameIndex];

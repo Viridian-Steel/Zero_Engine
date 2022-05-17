@@ -88,6 +88,8 @@ class ZDevice {
   void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
   void hasGflwRequiredInstanceExtensions();
   bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+  bool hasDedicatedDevice();
+  bool isDedicatedDevice(VkPhysicalDevice device);
   SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
   VkInstance instance;

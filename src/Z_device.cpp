@@ -117,12 +117,22 @@ void ZDevice::pickPhysicalDevice() {
   std::cout << "Device count: " << deviceCount << std::endl;
   std::vector<VkPhysicalDevice> devices(deviceCount);
   vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
-
-  for (const auto &device : devices) {
-    if (isDeviceSuitable(device)) {
-      physicalDevice = device;
-      break;
-    }
+  
+  if (hasDedicatedDevice()) {
+      for (const auto& device : devices) {
+          if (isDeviceSuitable(device) && isDedicatedDevice(device)) {
+              physicalDevice = device;
+              break;
+          }
+      }
+  }
+  else {
+      for (const auto& device : devices) {
+          if (isDeviceSuitable(device)) {
+              physicalDevice = device;
+              break;
+          }
+      }
   }
 
   if (physicalDevice == VK_NULL_HANDLE) {
@@ -315,6 +325,38 @@ bool ZDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   }
 
   return requiredExtensions.empty();
+}
+
+bool ZDevice::hasDedicatedDevice()
+{
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+    for (auto device : devices) {
+        VkPhysicalDeviceProperties props = {};
+        vkGetPhysicalDeviceProperties(device, &props);
+
+        // Determine the type of the physical device
+        if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ZDevice::isDedicatedDevice(VkPhysicalDevice device)
+{
+    VkPhysicalDeviceProperties props = {};
+    vkGetPhysicalDeviceProperties(device, &props);
+
+    // Determine the type of the physical device
+    if (props.deviceType == VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+    {
+        return true;
+    }
+    return false;
 }
 
 QueueFamilyIndices ZDevice::findQueueFamilies(VkPhysicalDevice device) {
