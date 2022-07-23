@@ -57,4 +57,12 @@ namespace ze {
 			}
 		};
 	}
+	ZGameObject ZGameObject::makePointLight(float intensity, float radius, glm::vec3 color){
+		ZGameObject gameObj = ZGameObject::createGameObject();
+		gameObj.color = color;
+		gameObj.transform.scale.x = radius;
+		gameObj.pointLightComponent = std::make_unique<PointLightComponent>();
+		gameObj.pointLightComponent->lightIntensity = intensity;
+		return gameObj;
+	}
 }

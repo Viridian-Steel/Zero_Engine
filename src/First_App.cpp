@@ -19,16 +19,6 @@
 
 namespace ze {
 
-	struct GlobalUBO {
-
-		glm::mat4 projection{ 1.f };
-		glm::mat4 view{ 1.f };
-		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .02f };
-		glm::vec3 lightPosition{ -1.f };
-		alignas(16) glm::vec4 LightColor{ 1.f };
-	};
-
-
 	FirstApp::FirstApp()
 	{
 		globalPool = ZDescriptorPool::Builder(zDevice)
@@ -107,14 +97,18 @@ namespace ze {
 				GlobalUBO ubo{};
 				ubo.projection = camera.getProjection();
 				ubo.view = camera.getView();
-
+				pointLightSystem.update(frameInfo, ubo);
+				ubo.invView = camera.getInvView();
 				uboBuffers[frameIndex]->writeToBuffer(&ubo);
 				uboBuffers[frameIndex]->flush();
 
 				//render
 				zRenderer.beginSwapChainRenderPass(commandBuffer);
+
+				//order matters
 				simpleRenderSystem.renderGameObjects(frameInfo);
 				pointLightSystem.render(frameInfo);
+
 				zRenderer.endSwapChainRenderPass(commandBuffer);
 				zRenderer.endFrame();
 			}
@@ -149,6 +143,23 @@ namespace ze {
 		floor.transform.scale = glm::vec3{ 3.f, 1.f, 3.f };
 
 		gameObjects.emplace(floor.getId(), std::move(floor));
+
+		std::vector<glm::vec3> lightColors{
+      		{1.f, .1f, .1f},
+      		{.1f, .1f, 1.f},
+      		{.1f, 1.f, .1f},
+      		{1.f, 1.f, .1f},
+      		{.1f, 1.f, 1.f},
+      		{1.f, 1.f, 1.f}  //
+  		};
+
+		for(int i = 0; i < lightColors.size(); i++){
+			auto pointlight = ZGameObject::makePointLight(0.2f);
+			pointlight.color = lightColors[i];
+			auto rotateLight = glm::rotate(glm::mat4(1.f), (i * glm::two_pi<float>())/ lightColors.size(),{ 0.f, -1.f, 0.f});
+			pointlight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+			gameObjects.emplace(pointlight.getId(), std::move(pointlight));
+		}
 	}
 }
 

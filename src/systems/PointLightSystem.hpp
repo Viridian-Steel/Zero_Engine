@@ -19,7 +19,7 @@ namespace ze {
 		PointLightSystem& operator=(const PointLightSystem&) = delete;
 		
 		void render(FrameInfo& frameInfo);
-
+		void update(FrameInfo& frameInfo, GlobalUBO& ubo);
 	private:
 		void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
 		void createPipeline(VkRenderPass renderPass);
